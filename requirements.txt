@@ -3,3 +3,5 @@ Unidecode==1.2.0
 fuzzywuzzy==0.18.0
 numpy==1.20.2
 textract==1.6.3
+requests==2.25.1
+pdfminer.six==20201018

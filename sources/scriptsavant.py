@@ -1,14 +1,12 @@
-from bs4 import BeautifulSoup
-import urllib
 import os
 from tqdm import tqdm
-import string
-from .utilities import format_filename, get_soup, get_pdf_text, get_doc_text
+from .utilities import format_filename, get_soup, get_pdf_text
+
 
 def get_scriptsavant():
     ALL_URL_1 = "https://thescriptsavant.com/free-movie-screenplays-am/"
     ALL_URL_2 = "https://thescriptsavant.com/free-movie-screenplays-nz/"
-    BASE_URL = "http://www.awesomefilm.com/"
+    BASE_URL = "https://thescriptsavant.com"
     DIR = os.path.join("scripts", "unprocessed", "scriptsavant")
 
     if not os.path.exists(DIR):
@@ -21,22 +19,30 @@ def get_scriptsavant():
     movielist_2 = soup_2.find_all('div', class_='fusion-text')[0].find_all('a')
     movielist += movielist_2
 
-
     for movie in tqdm(movielist):
-        name = format_filename(movie.text.strip())
-        script_url = movie.get('href')
-
-        if not script_url.endswith('.pdf'):
-            continue
-
         try:
-            text = get_pdf_text(script_url)
+            name = format_filename(movie.text.strip())
+            print(name)
+            script_url = movie.get('href')
+            print(script_url)
 
-        except:
-            continue
+            if not script_url.endswith('.pdf'):
+                soup_1 = get_soup(BASE_URL + script_url)
+                script_url = soup_1.find_all(attrs={'class': 'fusion-text'})[0].find_all('a')[0].get('href')
 
-        if text == "" or name == "":
-            continue
-        
-        with open(os.path.join(DIR, name + '.txt'), 'w', errors="ignore") as out:
-            out.write(text)
+            try:
+                text = get_pdf_text(script_url).replace('\x0C', '')
+
+            except Exception as ex:
+                print(movie)
+                print(ex)
+                continue
+
+            if text == "" or name == "":
+                continue
+
+            with open(os.path.join(DIR, name + '.txt'), 'w', errors="ignore") as out:
+                out.write(text)
+        except Exception as ex:
+            print(movie)
+            print(ex)

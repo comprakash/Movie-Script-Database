@@ -1,9 +1,14 @@
 from bs4 import BeautifulSoup
 import urllib
+import urllib.request
+import requests
 import string
 import os
 import textract
 import re
+from pdfminer import high_level
+from pdfminer.layout import LAParams
+
 
 def format_filename(s):
     valid_chars = "-() %s%s%s" % (string.ascii_letters, string.digits, "%")
@@ -23,16 +28,24 @@ def get_soup(url):
     soup = BeautifulSoup(resulttext, 'html.parser')
     return soup
 
+
 def get_pdf_text(url):
+    text = ""
     doc = os.path.join("scripts", "document.pdf")
-    result = urllib.request.urlopen(url)
-    f = open(doc, 'wb')
-    f.write(result.read())
-    f.close()
-    try:
-        text = textract.process(doc, encoding='utf-8').decode('utf-8')
-    except:
-        text = ""
+    response = requests.get(url)
+
+    if response.status_code == requests.codes.ok:
+        with open(doc, 'wb') as f:
+            f.write(response.content)
+        try:
+            text = high_level.extract_text(doc, laparams=LAParams(all_texts=True))
+        except Exception as ex:
+            print(url)
+            print(ex)
+    else:
+        print("Not able to download PDF url {url}: {status}, {content}".format(url=url, status=response.status_code,
+                                                                               content=response.content))
+
     if os.path.isfile(doc):
         os.remove(doc)
     return text
@@ -46,7 +59,9 @@ def get_doc_text(url):
     f.close()
     try:
         text = textract.process(doc, encoding='utf-8').decode('utf-8')
-    except:
+    except Exception as ex:
+        print(url)
+        print(ex)
         text = ""
     if os.path.isfile(doc):
         os.remove(doc)
