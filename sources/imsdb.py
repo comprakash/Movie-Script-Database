@@ -1,16 +1,14 @@
-from bs4 import BeautifulSoup
 import urllib
+import urllib.request
+import urllib.parse
 import os
-
-import time
-import string
 
 from tqdm import tqdm
 from .utilities import format_filename, get_soup, get_pdf_text
 
 
 def get_imsdb():
-    ALL_URL = "https://www.imsdb.com/all%20scripts"
+    ALL_URL = "https://imsdb.com/all-scripts.html"
     BASE_URL = "https://www.imsdb.com"
     DIR = os.path.join("scripts", "unprocessed", "imsdb")
 
@@ -55,29 +53,28 @@ def get_imsdb():
 
         return script_url, name
 
-
     soup = get_soup(ALL_URL)
     movielist = soup.find_all('p')
 
     for movie in tqdm(movielist):
-        script_url, name = get_script_url(movie)
-        if script_url == "":
-            continue
-        # if script_url.endswith('.html'):
-        #     name = script_url.split("/")[-1].split('.html')[0]
-        # elif script_url.endswith('.pdf'):
-        #     name = script_url.split("/")[-1].split('.pdf')[0]
+        try:
+            script_url, name = get_script_url(movie)
+            if script_url == "":
+                continue
+            # if script_url.endswith('.html'):
+            #     name = script_url.split("/")[-1].split('.html')[0]
+            # elif script_url.endswith('.pdf'):
+            #     name = script_url.split("/")[-1].split('.pdf')[0]
 
-        text = get_script_from_url(script_url)
+            text = get_script_from_url(script_url)
 
-        if text == "" or name == "":
-            continue
+            if text == "" or name == "":
+                continue
 
-        name = format_filename(name)
+            name = format_filename(name)
 
-        with open(os.path.join(DIR, name + '.txt'), 'w', errors="ignore") as out:
-            out.write(text)
-
-
-
-
+            with open(os.path.join(DIR, name + '.txt'), 'w', errors="ignore") as out:
+                out.write(text)
+        except Exception as ex:
+            print(movie)
+            print(ex)
