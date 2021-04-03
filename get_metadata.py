@@ -1,5 +1,5 @@
-import urllib
 import urllib.request
+import urllib.parse
 import json
 from tqdm import tqdm
 from os.path import isfile, join, sep, getsize, exists
@@ -9,6 +9,7 @@ from fuzzywuzzy import fuzz
 import unidecode
 
 import config
+
 
 DIR_FINAL = join("scripts", "final")
 
@@ -25,6 +26,7 @@ if not exists("metadata"):
 
 def camel_case_split(str):
     return re.findall(r'([A-Z0-9]+|[A-Z0-9]?[a-z]+)(?=[A-Z0-9]|\b)', str)
+
 
 def search_name(name):
     name = " ".join(name.split("-"))
@@ -48,6 +50,7 @@ def search_name(name):
         name = name.replace('shooting', "").strip()
     name = ' '.join(name.split())
     return name
+
 
 def average_ratio(n, m):
     return ((fuzz.token_sort_ratio(n,  m) + fuzz.token_sort_ratio(m,  n)) // 2)
@@ -136,8 +139,10 @@ def title_match(title, key):
     else:
         return False
 
+
 # Search TMDb for movies
 mapping = {}
+
 
 for movie in tqdm(movielist):
     name = search_name(movie.split(sep)[-1].split('.txt')[0])
@@ -417,17 +422,20 @@ for key in tqdm(all_missing):
         "\"", "").replace(".", "").replace(":", "")
     if first_line == "fade in":
         continue
-    response = urllib.request.urlopen(
-        "https://api.themoviedb.org/3/search/movie?api_key=" +
-        tmdb_api_key + "&language=en-US&query=" +
-        urllib.parse.quote(first_line)
-        + "&page=1")
-    html = response.read()
-    jres = json.loads(html)
-    if jres['total_results'] > 0:
-        tmdb_re[key] = jres['results']
-    else:
-        tmdb_re[key] = []
+    tmdb_re[key] = []
+    try:
+        response = urllib.request.urlopen(
+            "https://api.themoviedb.org/3/search/movie?api_key=" +
+            tmdb_api_key + "&language=en-US&query=" +
+            urllib.parse.quote(first_line)
+            + "&page=1")
+        html = response.read()
+        jres = json.loads(html)
+        if jres['total_results'] > 0:
+            tmdb_re[key] = jres['results']
+    except Exception as ex:
+        print(key)
+        print(ex)
 
 json_object = json.dumps(tmdb_re, indent=4)
 
