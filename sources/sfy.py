@@ -1,8 +1,5 @@
-from bs4 import BeautifulSoup
-import urllib
 import os
 from tqdm import tqdm
-import string
 import re
 from .utilities import format_filename, get_soup, get_pdf_text
 
@@ -22,29 +19,26 @@ def get_sfy():
     movielist = movielist.find_all('a')
 
     for movie in tqdm(movielist):
-        script_url = movie.get('href')
-        name = re.sub(r"(\d{4})", "", format_filename(
-            movie.text)).replace('()', "").strip("-")
-        text = ""
-        if not script_url.startswith('https'):
-            script_url = BASE_URL + script_url
+        try:
+            script_url = movie.get('href')
+            name = re.sub(r"(\d{4})", "", format_filename(
+                movie.text)).replace('()', "").strip("-")
+            text = ""
+            if not script_url.startswith('https'):
+                script_url = BASE_URL + script_url
 
-        if script_url.endswith('.pdf'):
-            try:
+            if script_url.endswith('.pdf'):
                 text = get_pdf_text(script_url)
-            except:
-                continue
-        else:
-            try:
+            else:
                 script_soup = get_soup(script_url).pre
                 if script_soup:
                     text = script_soup.get_text()
-            except:
+
+            if text == "" or name == "":
                 continue
 
-        if text == "" or name == "":
-            continue
-
-        with open(os.path.join(DIR, name + '.txt'), 'w', errors="ignore") as out:
-            out.write(text)
-
+            with open(os.path.join(DIR, name + '.txt'), 'w', errors="ignore") as out:
+                out.write(text)
+        except Exception as ex:
+            print(movie)
+            print(ex)
