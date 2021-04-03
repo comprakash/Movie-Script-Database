@@ -26,6 +26,10 @@ def get_scriptsavant():
             script_url = movie.get('href')
             print(script_url)
 
+            if os.path.isfile(os.path.join(DIR, name + '.txt')):
+                print("Already processed")
+                continue
+
             if not script_url.endswith('.pdf'):
                 soup_1 = get_soup(BASE_URL + script_url)
                 script_url = soup_1.find_all(attrs={'class': 'fusion-text'})[0].find_all('a')[0].get('href')
