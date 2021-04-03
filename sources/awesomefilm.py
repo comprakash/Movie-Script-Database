@@ -1,8 +1,8 @@
-from bs4 import BeautifulSoup
 import urllib
+import urllib.parse
+import urllib.request
 import os
 from tqdm import tqdm
-import string
 import re
 from .utilities import format_filename, get_soup, get_pdf_text, get_doc_text
 
@@ -18,22 +18,22 @@ def get_awesomefilm():
     movielist = list(set(soup.find_all('td', class_="tbl")))
 
     for movie in tqdm(movielist):
-        script_ele = movie.a
-        if not script_ele:
-            continue
-        
-        script_url = script_ele.get('href')
-        # print()
-
-        text = ""
-        name = re.sub(r'\([^)]*\)', '', format_filename(script_ele.text)).strip()
         try:
+            script_ele = movie.a
+            if not script_ele:
+                continue
+
+            script_url = script_ele.get('href')
+            # print()
+
+            text = ""
+            name = re.sub(r'\([^)]*\)', '', format_filename(script_ele.text)).strip()
             if script_url.endswith('.pdf'):
                 text = get_pdf_text(BASE_URL + urllib.parse.quote(script_url))
 
             elif script_url.endswith('.doc'):
                 text = get_doc_text(BASE_URL + urllib.parse.quote(script_url))
-            
+
             elif script_url.endswith('.txt'):
                 f = urllib.request.urlopen(BASE_URL + script_url)
                 text = f.read().decode("utf-8", errors="ignore")
@@ -43,13 +43,12 @@ def get_awesomefilm():
                 page = script_soup.pre
                 if page:
                     text = page.get_text()
-        except:
-            continue
 
-        if text == "":
-            continue
+            if text == "":
+                continue
 
-        with open(os.path.join(DIR, name + '.txt'), 'w', errors="ignore") as out:
-            out.write(text)
-            
-
+            with open(os.path.join(DIR, name + '.txt'), 'w', errors="ignore") as out:
+                out.write(text)
+        except Exception as ex:
+            print(movie)
+            print(ex)
