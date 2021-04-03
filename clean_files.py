@@ -8,7 +8,7 @@ import string
 
 DIR_IMSDB = join("scripts", "unprocessed", "imsdb")
 DIR_DAILY = join("scripts", "unprocessed", "dailyscript")
-DIR_WEEKLY = join("scripts", "unprocessed", "weeklyscript")
+# DIR_WEEKLY = join("scripts", "unprocessed", "weeklyscript")
 DIR_SCREEN = join("scripts", "unprocessed", "screenplays")
 DIR_AWESOME = join("scripts", "unprocessed", "awesomefilm")
 DIR_SAVANT = join("scripts", "unprocessed", "scriptsavant")
@@ -21,8 +21,8 @@ imsdb = [join(DIR_IMSDB, f) for f in listdir(DIR_IMSDB) if isfile(
     join(DIR_IMSDB, f)) and getsize(join(DIR_IMSDB, f)) > 3000]
 daily = [join(DIR_DAILY, f) for f in listdir(DIR_DAILY) if isfile(
     join(DIR_DAILY, f))and getsize(join(DIR_DAILY, f)) > 3000]
-weekly = [join(DIR_WEEKLY, f) for f in listdir(DIR_WEEKLY) if isfile(
-    join(DIR_WEEKLY, f))and getsize(join(DIR_WEEKLY, f)) > 3000]
+# weekly = [join(DIR_WEEKLY, f) for f in listdir(DIR_WEEKLY) if isfile(
+#     join(DIR_WEEKLY, f))and getsize(join(DIR_WEEKLY, f)) > 3000]
 screen = [join(DIR_SCREEN, f) for f in listdir(DIR_SCREEN) if isfile(
     join(DIR_SCREEN, f))and getsize(join(DIR_SCREEN, f)) > 3000]
 awesome = [join(DIR_AWESOME, f) for f in listdir(DIR_AWESOME) if isfile(
@@ -36,7 +36,7 @@ sources = {
     'savant': savant,
     'imsdb': imsdb,
     'daily': daily,
-    'weekly': weekly,
+    # 'weekly': weekly,
     'screen': screen,
     'awesome': awesome,
     'sfy': sfy
@@ -172,7 +172,7 @@ counts = {
     'scriptsavant': 0,
     'imsdb': 0,
     'dailyscript': 0,
-    'weeklyscript': 0,
+    # 'weeklyscript': 0,
     'screenplays': 0,
     'awesomefilm': 0,
     'sfy': 0

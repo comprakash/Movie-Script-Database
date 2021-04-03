@@ -12,9 +12,9 @@ print("Fetching from scriptsavant")
 sources.get_scriptsavant()
 print()
 
-print("Fetching from weeklyscript")
-sources.get_weeklyscript()
-print()
+# print("Fetching from weeklyscript")
+# sources.get_weeklyscript()
+# print()
 
 print("Fetching from dailyscript")
 sources.get_dailyscript()
