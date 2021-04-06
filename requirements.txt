@@ -5,3 +5,4 @@ numpy==1.20.2
 textract==1.6.3
 requests==2.25.1
 pdfminer.six==20201018
+python-Levenshtein==0.12.2
